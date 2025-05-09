@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="a4-document">
+        <div class="document-header">
+            <p class="document-title">Образец заявления на выделение материальной поддержки (помощи)</p>
+        </div>
+
+        <div class="document-body">
+            <div class="address-block" style="text-align: right;">
+                <p>Декану факультета/директору института</p>
+                <div class="underline-field" style="width: 60%; margin-left: auto;">
+                    {{ data.dean_name }}
+                </div>
+                <p>студента(ки)</p>
+                <div class="underline-field" style="width: 60%; margin-left: auto;">
+                    {{ data.student_name }}
+                </div>
+            </div>
+
+            <div class="info-block" style="text-align: right;">
+                <div class="info-row">
+                    <span class="info-label">форма обучения:</span>
+                    <div class="underline-field" style="width: 50%; margin-left: 2mm;">
+                        {{ data.education_form }}
+                    </div>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">основа обучения:</span>
+                    <div class="underline-field" style="width: 50%; margin-left: 2mm;">
+                        {{ data.education_basis }}
+                    </div>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">факультет/институт:</span>
+                    <div class="underline-field" style="width: 50%; margin-left: 2mm;">
+                        {{ data.faculty }}
+                    </div>
+                </div>
+                <div class="info-row">
+                    <div class="underline-field" style="width: 50%; margin-left: auto;">
+                        {{ data.course }} курса, гр. {{ data.group }}
+                    </div>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">контактный телефон:</span>
+                    <div class="underline-field" style="width: 50%; margin-left: 2mm;">
+                        {{ data.phone }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="application-title">
+                ЗАЯВЛЕНИЕ
+            </div>
+
+            <div class="reason-block">
+                <p>Прошу оказать мне материальную помощь в связи с _____</p>
+                <div class="underline-field">{{ data.reason }}</div>
+            </div>
+
+            <div class="attachment-block">
+                <p>Документы, подтверждающие принадлежность к категории нуждающихся, прилагаю.</p>
+            </div>
+
+            <div class="signature-block">
+                <div class="signature-left">
+                    <p>Дата_____ Подпись_____</p>
+                    <p class="signature-label">студента(ки)</p>
+                </div>
+                <div class="signature-right">
+                    <p>Дата_____ Подпись_____</p>
+                    <p class="signature-label">декан факультета/директор института</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .a4-document {
+            width: 210mm;
+            min-height: 297mm;
+            margin: 0 auto;
+            padding: 20mm 25mm;
+            background: white;
+            box-shadow: 0 0 5px rgba(0,0,0,0.1);
+            font-family: "Times New Roman", Times, serif;
+            font-size: 14pt;
+            line-height: 1.5;
+            color: black;
+        }
+
+        .document-header {
+            text-align: center;
+            margin-bottom: 15mm;
+        }
+
+        .document-title {
+            font-weight: bold;
+            font-style: italic;
+            margin-bottom: 10mm;
+        }
+
+        .address-block, .info-block, .reason-block, .attachment-block {
+            margin-bottom: 10mm;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: flex-end;
+            align-items: baseline;
+            margin-bottom: 5mm;
+            width: 100%;
+        }
+
+        .info-label {
+            margin-right: 2mm; /* Уменьшено с 5mm до 2mm */
+            white-space: nowrap;
+        }
+
+        .underline-field {
+            border-bottom: 1px solid black;
+            min-width: 50mm;
+            padding-bottom: 1mm;
+            text-align: left;
+        }
+
+        .application-title {
+            text-align: center;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin: 10mm 0;
+        }
+
+        .reason-note {
+            font-size: 0.9em;
+            margin-left: 10mm;
+            color: #555;
+        }
+
+        .signature-block {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20mm;
+        }
+
+        .signature-left, .signature-right {
+            width: 45%;
+        }
+
+        .signature-label {
+            text-align: center;
+            margin-top: 2mm;
+        }
+    </style>
+{% endblock %}

@@ -5,5 +5,5 @@ from wtforms.validators import DataRequired
 
 
 class SearchStudent(FlaskForm):
-    name = StringField(label="ФИО", validators=[DataRequired()])
+    name = StringField(label="Введите имя", validators=[DataRequired()])
     submit = SubmitField()

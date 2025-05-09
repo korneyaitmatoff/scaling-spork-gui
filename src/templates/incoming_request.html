@@ -1,0 +1,216 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    body {
+        font-family: 'Times New Roman', Times, serif;
+        line-height: 1.6;
+        color: #333;
+        margin: 0;
+        padding: 20px;
+    }
+    .container {
+        max-width: 800px;
+        margin: 0 auto;
+        background: white;
+        padding: 30px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    h1, h2 {
+        text-align: center;
+    }
+    h1 {
+        font-size: 18px;
+        margin-bottom: 30px;
+    }
+    h2 {
+        font-size: 16px;
+        text-transform: uppercase;
+        margin: 20px 0;
+    }
+    .form-group {
+        margin-bottom: 15px;
+    }
+    .form-row {
+        display: flex;
+        gap: 15px;
+    }
+    .form-row .form-group {
+        flex: 1;
+    }
+    label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+    }
+    input, select, textarea {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-family: inherit;
+        font-size: inherit;
+    }
+    textarea {
+        resize: vertical;
+        min-height: 100px;
+    }
+    .submit-btn, .print-btn, .back-btn {
+        display: inline-block;
+        padding: 10px 20px;
+        background: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+        margin-top: 10px;
+        text-decoration: none;
+    }
+    .submit-btn:hover, .print-btn:hover, .back-btn:hover {
+        background: #45a049;
+    }
+    .print-btn {
+        background: #2196F3;
+    }
+    .print-btn:hover {
+        background: #0b7dda;
+    }
+    .back-btn {
+        background: #f44336;
+        margin-left: 10px;
+    }
+    .back-btn:hover {
+        background: #da190b;
+    }
+    .application {
+        font-size: 14px;
+    }
+    .address, .student-info, .application-text, .footer {
+        margin-bottom: 20px;
+    }
+    .address p, .student-info p {
+        margin: 5px 0;
+    }
+    .footer p {
+        margin: 15px 0;
+    }
+    .actions {
+        text-align: center;
+        margin-top: 30px;
+    }
+    .flash-messages {
+        margin-bottom: 20px;
+    }
+    .flash-message {
+        padding: 10px;
+        margin-bottom: 10px;
+        border-radius: 4px;
+    }
+    .flash-error {
+        background-color: #ffebee;
+        color: #c62828;
+    }
+    .flash-success {
+        background-color: #e8f5e9;
+        color: #2e7d32;
+    }
+    @media print {
+        .actions {
+            display: none;
+        }
+        body {
+            background: none;
+            padding: 0;
+        }
+        .container {
+            box-shadow: none;
+            padding: 0;
+        }
+    }
+</style>
+<h1>Заявление на материальную помощь</h1>
+<form method="POST" action="/incoming_request" style="width: 50%;">
+    {{ form.hidden_tag() }}
+
+    <div class="form-group">
+        {{ form.dean_name.label }}
+        {{ form.dean_name(class="form-control") }}
+        {% if form.dean_name.errors %}
+        <div class="flash-message flash-error">{{ form.dean_name.errors[0] }}</div>
+        {% endif %}
+    </div>
+
+    <div class="form-group">
+        {{ form.student_name.label }}
+        {{ form.student_name(class="form-control") }}
+        {% if form.student_name.errors %}
+        <div class="flash-message flash-error">{{ form.student_name.errors[0] }}</div>
+        {% endif %}
+    </div>
+
+    <div class="form-group">
+        {{ form.education_form.label }}
+        {{ form.education_form(class="form-control") }}
+        {% if form.education_form.errors %}
+        <div class="flash-message flash-error">{{ form.education_form.errors[0] }}</div>
+        {% endif %}
+    </div>
+
+    <div class="form-group">
+        {{ form.education_basis.label }}
+        {{ form.education_basis(class="form-control") }}
+        {% if form.education_basis.errors %}
+        <div class="flash-message flash-error">{{ form.education_basis.errors[0] }}</div>
+        {% endif %}
+    </div>
+
+    <div class="form-group">
+        {{ form.faculty.label }}
+        {{ form.faculty(class="form-control") }}
+        {% if form.faculty.errors %}
+        <div class="flash-message flash-error">{{ form.faculty.errors[0] }}</div>
+        {% endif %}
+    </div>
+
+    <div class="form-row">
+        <div class="form-group">
+            {{ form.course.label }}
+            {{ form.course(class="form-control") }}
+            {% if form.course.errors %}
+            <div class="flash-message flash-error">{{ form.course.errors[0] }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            {{ form.group.label }}
+            {{ form.group(class="form-control") }}
+            {% if form.group.errors %}
+            <div class="flash-message flash-error">{{ form.group.errors[0] }}</div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="form-group">
+        {{ form.phone.label }}
+        {{ form.phone(class="form-control") }}
+        {% if form.phone.errors %}
+        <div class="flash-message flash-error">{{ form.phone.errors[0] }}</div>
+        {% endif %}
+    </div>
+
+    <div class="form-group">
+        {{ form.reason.label }}
+        {{ form.reason(class="form-control") }}
+        {% if form.reason.errors %}
+        <div class="flash-message flash-error">{{ form.reason.errors[0] }}</div>
+        {% endif %}
+    </div>
+
+    <div class="form-group">
+        <p>Документы, подтверждающие принадлежность к категории нуждающихся, прилагаются вместе с заявлением, которое передается сотруднику деканата.</p>
+    </div>
+
+    {{ form.submit(class="submit-btn") }}
+</form>
+{% endblock %}

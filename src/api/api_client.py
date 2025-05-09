@@ -51,3 +51,24 @@ class ApiClient(BaseClient):
             path="/student",
             json=json
         )
+
+    def create_incoming_request(
+            self,
+            json: TypedDict(
+                "Dict",
+                {
+                    "reason": str,
+                    "study_kind": str,
+                    "student_name": str,
+                    "is_commerce": bool,
+                    "faculty": str,
+                    "course": int,
+                    "student_group_code": str,
+                    "contact": str
+                }
+            )
+    ):
+        return self.post(
+            path="/incoming_request/create",
+            json=json
+        )

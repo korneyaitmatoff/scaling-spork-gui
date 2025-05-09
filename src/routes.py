@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime
 
 from app import app
 
@@ -14,6 +14,7 @@ from src.forms import (
     LoginForm,
     StudentsChoose, AddStudent, SearchStudent
 )
+from src.forms.incoming_request import IncomingRequestForm
 
 
 # TODO: make decorator for check auth
@@ -57,6 +58,8 @@ def students():
     selected_id = request.args.get("selected_id", default=1, type=int)
     name = request.args.get("name", default="", type=str)
 
+    search_student_form = SearchStudent()
+
     students_list: list[StudentsChoose] = []
     for item in api.get_students() if name == "" else api.get_students_by_name(name=name):
         form = StudentsChoose()
@@ -86,8 +89,6 @@ def students():
                 }
             }
         )
-    if (search_student_form := SearchStudent()).is_submitted():
-        print(search_student_form.name)
 
     return render_template(
         template_name_or_list="students.html",
@@ -97,6 +98,41 @@ def students():
         add_student_form=add_student_form,
         search_form=search_student_form
     )
+
+
+@app.route("/incoming_request", methods=["POST", "GET"])
+def incoming_request():
+    form = IncomingRequestForm()
+    if form.is_submitted():
+        form_data = {
+            'dean_name': form.dean_name.data,
+            'student_name': form.student_name.data,
+            'education_form': form.education_form.data,
+            'education_basis': form.education_basis.data,
+            'faculty': form.faculty.data,
+            'course': form.course.data,
+            'group': form.group.data,
+            'phone': form.phone.data,
+            'reason': form.reason.data,
+            'submission_date': datetime.now().strftime("%d.%m.%Y")
+        }
+
+        api.create_incoming_request(
+            json={
+                "reason": form.reason.data,
+                "study_kind": form.education_basis.data,
+                "student_name": form.student_name.data,
+                "is_commerce": form.education_form.data in ("Коммерческая", "коммерческая"),
+                "faculty": form.faculty.data,
+                "course": form.course.data,
+                "student_group_code": form.group.data,
+                "contact": form.phone.data
+            }
+        )
+
+        return render_template('incoming_request_result.html', data=form_data)
+
+    return render_template('incoming_request.html', form=form)
 
 # TODO: make page for employees
 # TODO: make page for votes
