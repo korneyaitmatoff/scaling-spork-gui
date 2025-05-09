@@ -4,9 +4,13 @@ from flask import (
     render_template,
     session,
     redirect,
+    request
 )
 from src.dependencies import api
-from src.forms import LoginForm
+from src.forms import (
+    LoginForm,
+    StudentsChoose, AddStudent, SearchStudent
+)
 
 
 # TODO: make decorator for check auth
@@ -27,6 +31,7 @@ def login():
         return redirect(location="/index")
 
     form = LoginForm()
+    message: str = None
 
     if form.is_submitted():
         response = api.is_employee_creds_correct(login=form.login.data, password=form.password.data)
@@ -36,13 +41,43 @@ def login():
 
             return redirect(location="/index")
         else:
-            ...
-        # TODO: realize errors output
+            message = "Неверный логин или пароль"
 
-    return render_template('index.html', title="Login", form=form)
+    return render_template('index.html', title="Login", form=form, message=message)
 
 
-# TODO: make page for students
+@app.route("/students", methods=["POST", "GET"])
+def students():
+    if session.get("is_auth") is not True:
+        return redirect(location="/index")
+
+    selected_id = request.args.get("selected_id", default=1, type=int)
+    name = request.args.get("name", default="", type=str)
+
+    students_list: list[StudentsChoose] = []
+    for item in api.get_students() if name == "" else api.get_students_by_name(name=name):
+        form = StudentsChoose()
+        form.id = item["id"]
+        form.name = item["name"]
+        form.group_code = item["group_code"]
+
+        students_list.append(form)
+
+    # prepare forms
+    if (add_student_form := AddStudent()).is_submitted():
+        print(add_student_form.name)
+    if (search_student_form := SearchStudent()).is_submitted():
+        print(search_student_form.name)
+
+    return render_template(
+        template_name_or_list="students.html",
+        title="Students",
+        students=students_list,
+        selected_student=api.get_student_by_id(s_id=selected_id)[0],
+        add_student_form=add_student_form,
+        search_form=search_student_form
+    )
+
 # TODO: make page for employees
 # TODO: make page for votes
 # # TODO: make page for make vote

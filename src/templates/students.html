@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="flex h-screen">
+    <!-- Сайдбар -->
+    <div class="w-128 bg-white shadow-md ml-20">
+        <div class="p-4 border-b">
+            <h2 class="text-xl font-semibold">Студенты</h2>
+            <div class="mt-2">
+                <form method="GET" action="#">
+                    {{ search_form.name(
+                        class_="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        )
+                    }}
+                    {{ search_form.submit(class_="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition duration-200") }}
+                </form>
+            </div>
+        </div>
+        <div class="overflow-y-auto h-[calc(100vh-4rem)]">
+            <ul id="student-list" class="divide-y divide-gray-200">
+                {% for student in students %}
+                <li class="p-3 hover:bg-gray-50 {% if selected_student and student.id == selected_student.id %}bg-blue-50{% endif %}">
+                    <a href="{{ url_for('students', selected_id=student.id) }}">
+                        <div class="font-medium">{{ student.name }}</div>
+                        <div class="text-sm text-gray-500">{{ student.group_code }}</div>
+                        <div class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition duration-200">
+                            {{ student.submit }}
+                        </div>
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <!-- Основной контент -->
+    <div class="flex-1 p-6 overflow-y-auto">
+        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+            <h2 class="text-xl font-semibold mb-4">Добавить студента</h2>
+            <form id="add-student-form" class="space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        {{ add_student_form.name.label(class_="block text-sm font-medium text-gray-700") }}
+                        {{ add_student_form.name(class_="mt-1 block w-full border border-gray-300 rounded-md shadow-sm
+                        py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500") }}
+                    </div>
+                    <div>
+                        {{ add_student_form.group_code.label(class_="block text-sm font-medium text-gray-700") }}
+                        {{ add_student_form.group_code(class_="mt-1 block w-full border border-gray-300 rounded-md
+                        shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500") }}
+                    </div>
+                    <div>
+                        {{ add_student_form.inn.label(class_="block text-sm font-medium text-gray-700") }}
+                        {{ add_student_form.inn(class_="mt-1 block w-full border border-gray-300 rounded-md shadow-sm
+                        py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500") }}
+                    </div>
+                    <div>
+                        {{ add_student_form.passport_data.label(class_="block text-sm font-medium text-gray-700") }}
+                        {{ add_student_form.passport_data(class_="mt-1 block w-full border border-gray-300 rounded-md
+                        shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500") }}
+                    </div>
+                </div>
+                <div class="flex items-center">
+                    {{ add_student_form.is_resident.label(class_="mr-2 block text-sm text-gray-700") }}
+                    {{ add_student_form.is_resident(class_="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded") }}
+                </div>
+                {{ add_student_form.submit(class_="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700
+                focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500") }}
+            </form>
+        </div>
+
+        <div id="student-details" class="bg-white rounded-lg shadow-md p-6">
+            {% if selected_student %}
+            <h2 class="text-xl font-semibold mb-4">Информация о студенте</h2>
+            <div class="space-y-4">
+                <div>
+                    <h3 class="text-lg font-medium">{{ selected_student.name }}</h3>
+                    <p class="text-gray-500">{{ selected_student.group_code }}</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <p class="text-sm text-gray-500">ИНН</p>
+                        <p>{{ selected_student.inn }}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500">Паспортные данные</p>
+                        <p>{{ selected_student.passport_data }}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500">Резидент РФ</p>
+                        <p>{{ 'Да' if selected_student.is_resident else 'Нет' }}</p>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <p class="text-gray-500">Выберите студента из списка</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

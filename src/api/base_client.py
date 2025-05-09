@@ -11,9 +11,9 @@ class BaseClient(AbstractClient):
     def __init__(self, url: str):
         self.url = url
 
-    def get(self, **kwargs) -> Response:
+    def get(self, path: str = "/", **kwargs) -> Response:
         return Session().get(
-            url=self.url,
+            url=self.url + path,
             **kwargs
         )
 

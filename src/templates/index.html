@@ -4,16 +4,11 @@
 <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
     <h1 class="text-2xl font-bold text-center mb-6 text-gray-800">Авторизация</h1>
 
-    <!-- Flash messages -->
-    {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-    {% for category, message in messages %}
-    <div class="mb-4 p-4 rounded-md {% if category == 'error' %}bg-red-100 text-red-700{% else %}bg-green-100 text-green-700{% endif %}">
+    {% if message %}
+    <div class="mb-4 p-4 rounded-md bg-red-100 text-red-700">
         {{ message }}
     </div>
-    {% endfor %}
     {% endif %}
-    {% endwith %}
 
     <form method="POST" action="#" class="space-y-6">
         <div>
