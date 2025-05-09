@@ -1,3 +1,5 @@
+from datetime import date
+
 from app import app
 
 from flask import (
@@ -6,6 +8,7 @@ from flask import (
     redirect,
     request
 )
+from wtforms import Field
 from src.dependencies import api
 from src.forms import (
     LoginForm,
@@ -65,7 +68,24 @@ def students():
 
     # prepare forms
     if (add_student_form := AddStudent()).is_submitted():
-        print(add_student_form.name)
+        print(
+            {
+                key: value.data for key, value in add_student_form.__dict__.items()
+                if isinstance(value, Field) and key not in ("csrf_token", "submit")
+            }
+        )
+        api.add_student(
+            json={
+                "name": add_student_form.name.data,
+                "group_code": add_student_form.group_code.data,
+                "inn": add_student_form.inn.data,
+                "is_resident": add_student_form.is_resident.data,
+                "passport_data": {
+                    "serial_number": add_student_form.serial_number.data,
+                    "birthdate": add_student_form.birthdate.data.strftime('%Y-%m-%d')
+                }
+            }
+        )
     if (search_student_form := SearchStudent()).is_submitted():
         print(search_student_form.name)
 

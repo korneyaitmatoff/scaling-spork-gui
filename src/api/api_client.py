@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, TypedDict
 
 from src.api.base_client import BaseClient
 
@@ -30,3 +30,24 @@ class ApiClient(BaseClient):
         return self.get(
             path="/student/get_students_by_name/" + name
         ).json()
+
+    def add_student(self, json: TypedDict(
+        "Dict",
+        {
+            "name": str,
+            "group_code": str,
+            "inn": str,
+            "is_resident": bool,
+            "passport_data": TypedDict(
+                "Dict",
+                {
+                    "serial_number": str,
+                    "birthdate": str
+                }
+            )
+        }
+    )):
+        return self.post(
+            path="/student",
+            json=json
+        )

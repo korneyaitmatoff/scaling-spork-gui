@@ -37,7 +37,7 @@
     <div class="flex-1 p-6 overflow-y-auto">
         <div class="bg-white rounded-lg shadow-md p-6 mb-6">
             <h2 class="text-xl font-semibold mb-4">Добавить студента</h2>
-            <form id="add-student-form" class="space-y-4">
+            <form id="add-student-form" class="space-y-4" method="POST" action="#">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         {{ add_student_form.name.label(class_="block text-sm font-medium text-gray-700") }}
@@ -55,8 +55,13 @@
                         py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500") }}
                     </div>
                     <div>
-                        {{ add_student_form.passport_data.label(class_="block text-sm font-medium text-gray-700") }}
-                        {{ add_student_form.passport_data(class_="mt-1 block w-full border border-gray-300 rounded-md
+                        {{ add_student_form.serial_number.label(class_="block text-sm font-medium text-gray-700") }}
+                        {{ add_student_form.serial_number(class_="mt-1 block w-full border border-gray-300 rounded-md
+                        shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500") }}
+                    </div>
+                    <div>
+                        {{ add_student_form.birthdate.label(class_="block text-sm font-medium text-gray-700") }}
+                        {{ add_student_form.birthdate(class_="mt-1 block w-full border border-gray-300 rounded-md
                         shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500") }}
                     </div>
                 </div>
