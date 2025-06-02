@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+
 
 {% block content %}
 <style>
@@ -50,6 +50,7 @@
         border-radius: 4px;
         font-family: inherit;
         font-size: inherit;
+        box-sizing: border-box;
     }
     textarea {
         resize: vertical;
@@ -129,88 +130,125 @@
         }
     }
 </style>
-<h1>Заявление на материальную помощь</h1>
-<form method="POST" action="/incoming_request" style="width: 50%;">
-    {{ form.hidden_tag() }}
 
-    <div class="form-group">
-        {{ form.dean_name.label }}
-        {{ form.dean_name(class="form-control") }}
-        {% if form.dean_name.errors %}
-        <div class="flash-message flash-error">{{ form.dean_name.errors[0] }}</div>
+<div class="container">
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                    <div class="flash-message {% if category == 'error' %}flash-error{% elif category == 'success' %}flash-success{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
         {% endif %}
-    </div>
+    {% endwith %}
 
-    <div class="form-group">
-        {{ form.student_name.label }}
-        {{ form.student_name(class="form-control") }}
-        {% if form.student_name.errors %}
-        <div class="flash-message flash-error">{{ form.student_name.errors[0] }}</div>
-        {% endif %}
-    </div>
+    <h1>Заявление на материальную помощь</h1>
 
-    <div class="form-group">
-        {{ form.education_form.label }}
-        {{ form.education_form(class="form-control") }}
-        {% if form.education_form.errors %}
-        <div class="flash-message flash-error">{{ form.education_form.errors[0] }}</div>
-        {% endif %}
-    </div>
+    <form method="POST" action="{{ url_for('incoming_request') }}" style="width: 100%;">
+        {{ form.hidden_tag() }}
 
-    <div class="form-group">
-        {{ form.education_basis.label }}
-        {{ form.education_basis(class="form-control") }}
-        {% if form.education_basis.errors %}
-        <div class="flash-message flash-error">{{ form.education_basis.errors[0] }}</div>
-        {% endif %}
-    </div>
-
-    <div class="form-group">
-        {{ form.faculty.label }}
-        {{ form.faculty(class="form-control") }}
-        {% if form.faculty.errors %}
-        <div class="flash-message flash-error">{{ form.faculty.errors[0] }}</div>
-        {% endif %}
-    </div>
-
-    <div class="form-row">
         <div class="form-group">
-            {{ form.course.label }}
-            {{ form.course(class="form-control") }}
-            {% if form.course.errors %}
-            <div class="flash-message flash-error">{{ form.course.errors[0] }}</div>
+            {{ form.dean_name.label }}
+            {{ form.dean_name(class="form-control") }}
+            {% if form.dean_name.errors %}
+                {% for error in form.dean_name.errors %}
+                    <div class="flash-message flash-error">{{ error }}</div>
+                {% endfor %}
             {% endif %}
         </div>
 
         <div class="form-group">
-            {{ form.group.label }}
-            {{ form.group(class="form-control") }}
-            {% if form.group.errors %}
-            <div class="flash-message flash-error">{{ form.group.errors[0] }}</div>
+            {{ form.student_name.label }}
+            {{ form.student_name(class="form-control") }}
+            {% if form.student_name.errors %}
+                {% for error in form.student_name.errors %}
+                    <div class="flash-message flash-error">{{ error }}</div>
+                {% endfor %}
             {% endif %}
         </div>
-    </div>
 
-    <div class="form-group">
-        {{ form.phone.label }}
-        {{ form.phone(class="form-control") }}
-        {% if form.phone.errors %}
-        <div class="flash-message flash-error">{{ form.phone.errors[0] }}</div>
-        {% endif %}
-    </div>
+        <div class="form-group">
+            {{ form.education_form.label }}
+            {{ form.education_form(class="form-control") }}
+            {% if form.education_form.errors %}
+                {% for error in form.education_form.errors %}
+                    <div class="flash-message flash-error">{{ error }}</div>
+                {% endfor %}
+            {% endif %}
+        </div>
 
-    <div class="form-group">
-        {{ form.reason.label }}
-        {{ form.reason(class="form-control") }}
-        {% if form.reason.errors %}
-        <div class="flash-message flash-error">{{ form.reason.errors[0] }}</div>
-        {% endif %}
-    </div>
+        <div class="form-group">
+            {{ form.education_basis.label }}
+            {{ form.education_basis(class="form-control") }}
+            {% if form.education_basis.errors %}
+                {% for error in form.education_basis.errors %}
+                    <div class="flash-message flash-error">{{ error }}</div>
+                {% endfor %}
+            {% endif %}
+        </div>
 
-    <div class="form-group">
-        <p>Документы, подтверждающие принадлежность к категории нуждающихся, прилагаются вместе с заявлением, которое передается сотруднику деканата.</p>
-    </div>
+        <div class="form-group">
+            {{ form.faculty.label }}
+            {{ form.faculty(class="form-control") }}
+            {% if form.faculty.errors %}
+                {% for error in form.faculty.errors %}
+                    <div class="flash-message flash-error">{{ error }}</div>
+                {% endfor %}
+            {% endif %}
+        </div>
 
-    {{ form.submit(class="submit-btn") }}
-</form>
+        <div class="form-row">
+            <div class="form-group">
+                {{ form.course.label }}
+                {{ form.course(class="form-control") }}
+                {% if form.course.errors %}
+                    {% for error in form.course.errors %}
+                        <div class="flash-message flash-error">{{ error }}</div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                {{ form.group.label }}
+                {{ form.group(class="form-control") }}
+                {% if form.group.errors %}
+                    {% for error in form.group.errors %}
+                        <div class="flash-message flash-error">{{ error }}</div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="form-group">
+            {{ form.phone.label }}
+            {{ form.phone(class="form-control") }}
+            {% if form.phone.errors %}
+                {% for error in form.phone.errors %}
+                    <div class="flash-message flash-error">{{ error }}</div>
+                {% endfor %}
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            {{ form.reason.label }}
+            {{ form.reason(class="form-control") }}
+            {% if form.reason.errors %}
+                {% for error in form.reason.errors %}
+                    <div class="flash-message flash-error">{{ error }}</div>
+                {% endfor %}
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <p>Документы, подтверждающие принадлежность к категории нуждающихся, прилагаются вместе с заявлением, которое передается сотруднику деканата.</p>
+        </div>
+
+        <div class="actions">
+            {{ form.submit(class="submit-btn") }}
+        </div>
+    </form>
+</div>
 {% endblock %}

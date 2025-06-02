@@ -1,8 +1,9 @@
 from sqlalchemy import create_engine
-from models import Base, User, Student, SessionLocal
+from models import Base, User, Student, IncomingRequest, SessionLocal
 from werkzeug.security import generate_password_hash
-from datetime import date
+from datetime import date, datetime
 import os
+
 
 def create_tables():
     """Create all database tables"""
@@ -10,6 +11,7 @@ def create_tables():
     engine = create_engine(DATABASE_URL)
     Base.metadata.create_all(bind=engine)
     print("Tables created successfully!")
+
 
 def add_test_data():
     """Add test data to the database"""
@@ -125,6 +127,91 @@ def add_test_data():
 
             print("Test students added successfully!")
 
+        # Check if test incoming requests already exist
+        existing_request = db.query(IncomingRequest).first()
+        if not existing_request:
+            # Create test incoming requests
+            test_requests = [
+                {
+                    'dean_name': 'Профессор Смирнов А.В.',
+                    'student_name': 'Иванов Иван Иванович',
+                    'education_form': 'full-time',
+                    'education_basis': 'budget',
+                    'faculty': 'Факультет информационных систем',
+                    'course': 3,
+                    'group': 'ИС-21-1',
+                    'phone': '+7 (999) 123-45-67',
+                    'reason': 'Прошу оказать материальную помощь в связи с тяжелым материальным положением семьи. Отец потерял работу, мать находится в декретном отпуске. Необходимы средства на оплату общежития и питания.',
+                    'status': 'pending'
+                },
+                {
+                    'dean_name': 'Доцент Петрова М.И.',
+                    'student_name': 'Козлова Мария Дмитриевна',
+                    'education_form': 'full-time',
+                    'education_basis': 'budget',
+                    'faculty': 'Факультет информационных систем',
+                    'course': 3,
+                    'group': 'ИС-21-2',
+                    'phone': '+7 (999) 234-56-78',
+                    'reason': 'Прошу предоставить материальную помощь для покрытия расходов на лечение. Требуется дорогостоящая операция, семья не может самостоятельно оплатить медицинские услуги.',
+                    'status': 'approved'
+                },
+                {
+                    'dean_name': 'Профессор Волков С.П.',
+                    'student_name': 'Новиков Алексей Викторович',
+                    'education_form': 'full-time',
+                    'education_basis': 'contract',
+                    'faculty': 'Факультет информационных систем',
+                    'course': 4,
+                    'group': 'ИС-20-1',
+                    'phone': '+7 (999) 345-67-89',
+                    'reason': 'Прошу оказать материальную поддержку в связи с рождением ребенка в семье. Необходимы средства на детские товары и медицинское обслуживание.',
+                    'status': 'pending'
+                },
+                {
+                    'dean_name': 'Доцент Морозова Е.А.',
+                    'student_name': 'Лебедева Ольга Николаевна',
+                    'education_form': 'full-time',
+                    'education_basis': 'budget',
+                    'faculty': 'Факультет информационных систем',
+                    'course': 2,
+                    'group': 'ИС-22-1',
+                    'phone': '+7 (999) 456-78-90',
+                    'reason': 'Прошу предоставить материальную помощь в связи с потерей кормильца. После смерти отца семья оказалась в трудном финансовом положении.',
+                    'status': 'approved'
+                },
+                {
+                    'dean_name': 'Профессор Смирнов А.В.',
+                    'student_name': 'Петрова Анна Сергеевна',
+                    'education_form': 'full-time',
+                    'education_basis': 'budget',
+                    'faculty': 'Факультет информационных систем',
+                    'course': 3,
+                    'group': 'ИС-21-1',
+                    'phone': '+7 (999) 567-89-01',
+                    'reason': 'Прошу оказать материальную помощь для приобретения учебной литературы и оплаты интернета для дистанционного обучения. Семья имеет низкий доход.',
+                    'status': 'rejected'
+                },
+                {
+                    'dean_name': 'Доцент Кузнецов И.В.',
+                    'student_name': 'Волков Дмитрий Андреевич',
+                    'education_form': 'full-time',
+                    'education_basis': 'budget',
+                    'faculty': 'Факультет информационных систем',
+                    'course': 2,
+                    'group': 'ИС-22-1',
+                    'phone': '+7 (999) 678-90-12',
+                    'reason': 'Прошу предоставить материальную поддержку в связи с необходимостью оплаты проезда к месту прохождения практики в другом городе.',
+                    'status': 'pending'
+                }
+            ]
+
+            for request_data in test_requests:
+                incoming_request = IncomingRequest(**request_data)
+                db.add(incoming_request)
+
+            print("Test incoming requests added successfully!")
+
         db.commit()
         print("\nTest login credentials:")
         print("Username: admin, Password: admin123")
@@ -137,12 +224,14 @@ def add_test_data():
     finally:
         db.close()
 
+
 def init_database():
     """Initialize database with tables and test data"""
     print("Initializing database...")
     create_tables()
     add_test_data()
     print("Database initialization complete!")
+
 
 if __name__ == '__main__':
     init_database()

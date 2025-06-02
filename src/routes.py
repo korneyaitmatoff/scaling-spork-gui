@@ -1,25 +1,21 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 from werkzeug.security import check_password_hash
-from models import User, Student, get_db
-from src.forms import SearchStudentForm, AddStudentForm
+from models import User, Student, IncomingRequest, get_db
+from forms import SearchStudentForm, AddStudentForm, IncomingRequestForm
 from functools import wraps
 from sqlalchemy import or_
 
 app = Flask(__name__)
 app.secret_key = 'your-secret-key-change-this-in-production'
 
-
 def login_required(f):
     """Decorator to require login for protected routes"""
-
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if 'user_id' not in session:
             return redirect(url_for('login'))
         return f(*args, **kwargs)
-
     return decorated_function
-
 
 @app.route('/')
 def index():
@@ -27,7 +23,6 @@ def index():
     if 'user_id' in session:
         return redirect(url_for('dashboard'))
     return redirect(url_for('login'))
-
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -69,7 +64,6 @@ def login():
 
     return render_template('login.html')
 
-
 @app.route('/logout')
 def logout():
     """Logout handler"""
@@ -78,14 +72,12 @@ def logout():
     flash(f'Goodbye, {username}!', 'info')
     return redirect(url_for('login'))
 
-
 @app.route('/dashboard')
 @login_required
 def dashboard():
     """Protected dashboard page"""
     username = session.get('username', 'User')
     return render_template('dashboard.html', username=username)
-
 
 @app.route('/profile')
 @login_required
@@ -97,7 +89,6 @@ def profile():
         return render_template('profile.html', user=user)
     finally:
         db.close()
-
 
 @app.route('/students', methods=['GET', 'POST'])
 @login_required
@@ -157,19 +148,67 @@ def students():
                 pass
 
         return render_template('students.html',
-                               students=students,
-                               selected_student=selected_student,
-                               search_form=search_form,
-                               add_student_form=add_student_form)
+                             students=students,
+                             selected_student=selected_student,
+                             search_form=search_form,
+                             add_student_form=add_student_form)
 
     finally:
         db.close()
 
+@app.route('/incoming_request', methods=['GET', 'POST'])
+@login_required
+def incoming_request():
+    """Incoming request form page"""
+    form = IncomingRequestForm()
+
+    if form.validate_on_submit():
+        db = next(get_db())
+        try:
+            new_request = IncomingRequest(
+                dean_name=form.dean_name.data,
+                student_name=form.student_name.data,
+                education_form=form.education_form.data,
+                education_basis=form.education_basis.data,
+                faculty=form.faculty.data,
+                course=form.course.data,
+                group=form.group.data,
+                phone=form.phone.data,
+                reason=form.reason.data
+            )
+            db.add(new_request)
+            db.commit()
+
+            flash('Application submitted successfully!', 'success')
+            return redirect(url_for('incoming_request_result', request_id=new_request.id))
+
+        except Exception as e:
+            db.rollback()
+            flash('Error submitting application. Please try again.', 'error')
+            print(f"Error submitting request: {e}")
+        finally:
+            db.close()
+
+    return render_template('incoming_request.html', form=form)
+
+@app.route('/incoming_request_result/<int:request_id>')
+@login_required
+def incoming_request_result(request_id):
+    """Display the submitted request result"""
+    db = next(get_db())
+    try:
+        request_data = db.query(IncomingRequest).filter(IncomingRequest.id == request_id).first()
+        if not request_data:
+            flash('Request not found', 'error')
+            return redirect(url_for('dashboard'))
+
+        return render_template('incoming_request_result.html', request=request_data)
+    finally:
+        db.close()
 
 @app.route("/votes")
 def votes():
     pass
-
 
 if __name__ == '__main__':
     app.run(debug=True, port=5004)

@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, Column, Integer, String, DateTime, Boolean, Date
+from sqlalchemy import create_engine, Column, Integer, String, DateTime, Boolean, Date, Text
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from datetime import datetime, date
@@ -39,6 +39,26 @@ class Student(Base):
 
     def __repr__(self):
         return f'<Student {self.name}>'
+
+
+class IncomingRequest(Base):
+    __tablename__ = 'incoming_requests'
+
+    id = Column(Integer, primary_key=True)
+    dean_name = Column(String(100), nullable=False)
+    student_name = Column(String(100), nullable=False)
+    education_form = Column(String(50), nullable=False)
+    education_basis = Column(String(50), nullable=False)
+    faculty = Column(String(100), nullable=False)
+    course = Column(Integer, nullable=False)
+    group = Column(String(20), nullable=False)
+    phone = Column(String(20), nullable=False)
+    reason = Column(Text, nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    status = Column(String(20), default='pending')  # pending, approved, rejected
+
+    def __repr__(self):
+        return f'<IncomingRequest {self.student_name}>'
 
 
 # Database configuration

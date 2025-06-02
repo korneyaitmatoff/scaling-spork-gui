@@ -1,5 +1,3 @@
-{% extends "base.html" %}
-
 {% block content %}
     <div class="a4-document">
         <div class="document-header">
@@ -10,11 +8,11 @@
             <div class="address-block" style="text-align: right;">
                 <p>Декану факультета/директору института</p>
                 <div class="underline-field" style="width: 60%; margin-left: auto;">
-                    {{ data.dean_name }}
+                    {{ request.dean_name }}
                 </div>
                 <p>студента(ки)</p>
                 <div class="underline-field" style="width: 60%; margin-left: auto;">
-                    {{ data.student_name }}
+                    {{ request.student_name }}
                 </div>
             </div>
 
@@ -22,30 +20,39 @@
                 <div class="info-row">
                     <span class="info-label">форма обучения:</span>
                     <div class="underline-field" style="width: 50%;">
-                        {{ data.education_form }}
+                        {% if request.education_form == 'full-time' %}очная
+                        {% elif request.education_form == 'part-time' %}заочная
+                        {% elif request.education_form == 'evening' %}вечерняя
+                        {% elif request.education_form == 'distance' %}дистанционная
+                        {% else %}{{ request.education_form }}
+                        {% endif %}
                     </div>
                 </div>
                 <div class="info-row">
                     <span class="info-label">основа обучения:</span>
                     <div class="underline-field" style="width: 50%;">
-                        {{ data.education_basis }}
+                        {% if request.education_basis == 'budget' %}бюджетная
+                        {% elif request.education_basis == 'contract' %}контрактная
+                        {% elif request.education_basis == 'target' %}целевая
+                        {% else %}{{ request.education_basis }}
+                        {% endif %}
                     </div>
                 </div>
                 <div class="info-row">
                     <span class="info-label">факультет/институт:</span>
                     <div class="underline-field" style="width: 50%;">
-                        {{ data.faculty }}
+                        {{ request.faculty }}
                     </div>
                 </div>
                 <div class="info-row">
                     <div class="underline-field" style="width: 50%; margin-left: auto;">
-                        {{ data.course }} курса, гр. {{ data.group }}
+                        {{ request.course }} курса, гр. {{ request.group }}
                     </div>
                 </div>
                 <div class="info-row">
                     <span class="info-label">контактный телефон:</span>
                     <div class="underline-field" style="width: 50%;">
-                        {{ data.phone }}
+                        {{ request.phone }}
                     </div>
                 </div>
             </div>
@@ -56,7 +63,7 @@
 
             <div class="reason-block">
                 <p>Прошу оказать мне материальную помощь в связи с _____</p>
-                <div class="underline-field">{{ data.reason }}</div>
+                <div class="underline-field">{{ request.reason }}</div>
             </div>
 
             <div class="attachment-block">
@@ -65,7 +72,7 @@
 
             <div class="signature-block">
                 <div class="signature-left">
-                    <p>Дата_____ Подпись_____</p>
+                    <p>Дата {{ request.created_at.strftime('%d.%m.%Y') }} Подпись_____</p>
                     <p class="signature-label">студента(ки)</p>
                 </div>
                 <div class="signature-right">
@@ -114,7 +121,7 @@
         }
 
         .info-label {
-            margin-right: 2mm; /* Уменьшено с 5mm до 2mm */
+            margin-right: 2mm;
             white-space: nowrap;
         }
 
@@ -123,6 +130,7 @@
             min-width: 50mm;
             padding-bottom: 1mm;
             text-align: left;
+            min-height: 1.2em;
         }
 
         .application-title {
@@ -151,6 +159,97 @@
         .signature-label {
             text-align: center;
             margin-top: 2mm;
+        }
+
+        /* Status styling */
+        .status {
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 12pt;
+        }
+        .status-pending {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        .status-approved {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .status-rejected {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        /* Button styling */
+        .print-btn, .back-btn, .new-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            text-decoration: none;
+            color: white;
+        }
+        .print-btn {
+            background: #2196F3;
+        }
+        .print-btn:hover {
+            background: #0b7dda;
+        }
+        .back-btn {
+            background: #f44336;
+        }
+        .back-btn:hover {
+            background: #da190b;
+        }
+        .new-btn {
+            background: #4CAF50;
+        }
+        .new-btn:hover {
+            background: #45a049;
+        }
+
+        /* Print styles */
+        @media print {
+            .actions, .status-info {
+                display: none !important;
+            }
+            .a4-document {
+                box-shadow: none;
+                margin: 0;
+                padding: 15mm 20mm;
+            }
+            body {
+                margin: 0;
+                padding: 0;
+            }
+        }
+
+        /* Responsive design for smaller screens */
+        @media screen and (max-width: 768px) {
+            .a4-document {
+                width: 95%;
+                padding: 15mm 10mm;
+                font-size: 12pt;
+            }
+            .info-row {
+                flex-direction: column;
+                align-items: flex-end;
+            }
+            .info-label {
+                margin-right: 0;
+                margin-bottom: 2mm;
+            }
+            .signature-block {
+                flex-direction: column;
+            }
+            .signature-left, .signature-right {
+                width: 100%;
+                margin-bottom: 10mm;
+            }
         }
     </style>
 {% endblock %}
