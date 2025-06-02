@@ -1,0 +1,10 @@
+version: '3.7'
+services:
+  database:
+    image: postgres
+    environment:
+      POSTGRES_USER: username
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: scaling_spork_db
+    ports:
+      - "5432:5432"
