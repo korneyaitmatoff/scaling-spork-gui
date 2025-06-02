@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="protocol-page">
+    <div class="protocol-actions">
+        <a href="{{ url_for('votes') }}" class="back-btn">← Вернуться к голосованию</a>
+        <button onclick="window.print()" class="print-btn">Печать протокола</button>
+    </div>
+
+    <div class="protocol-document">
+        <p style="text-align: center; font-weight: bold; font-size: 1.2em;">ПРОТОКОЛ</p>
+        <p style="text-align: center; font-style: italic;">заседания стипендиальной комиссии института передовых информационных технологий</p>
+        
+        <p>№____ от {{ protocol_date }} года.</p>
+        
+        <p><strong>Присутствовали:</strong> Прикалов А.Н. - председатель комиссии;</p>
+        <p>Богатырева Ю.И., Екатеринкина А.Л., Яковлева Н.А., Серегина Е.С., Яковлев В.А., Мирзян С.С., Червянов А.Ю., Алешина А.Е., Самулиев А.Д., Зеленяк И.И., Шадин Е.Е., Рассохина А.А., Ерохина С.А., Клюева С.С., Тюрин И.С., Водохский Н.Н., Цёханя И.В., Филатова В.С., Давыдов Д.Р.</p>
+        
+        <p style="font-weight: bold; text-align: center;">ПОВЕСТКА ЗАСЕДАНИЯ:</p>
+        
+        <p>1. <strong>О выделении материальной поддержки студентам института</strong></p>
+        
+        <!-- Остальное содержимое протокола как в предыдущем примере -->
+        
+        <table class="protocol-table">
+            <tr>
+                <th>№</th>
+                <th>Фамилия</th>
+                <th>Имя</th>
+                <th>Отчество</th>
+                <th>Группа</th>
+                <th>Сумма</th>
+                <th>Основание</th>
+            </tr>
+            {% for student in students %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ student.last_name }}</td>
+                <td>{{ student.first_name }}</td>
+                <td>{{ student.middle_name }}</td>
+                <td>{{ student.group }}</td>
+                <td>{{ student.amount }}</td>
+                <td>{{ student.reason }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+        
+        <!-- Подписи -->
+        <div class="signatures">
+            <div class="signature-row">
+                <div class="signature-left">
+                    <p>Прикалов А.Н./</p>
+                </div>
+                <div class="signature-right">
+                    <p>Председатель комиссии, директор института_____/_____/</p>
+                </div>
+            </div>
+            
+            <div class="signature-row">
+                <div class="signature-left">
+                    <p>Специалист по ВР_____/_____/</p>
+                </div>
+                <div class="signature-right">
+                    <p>Председатель профбюро _____</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .protocol-page {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 20px;
+        font-family: 'Times New Roman', Times, serif;
+        font-size: 14px;
+        line-height: 1.5;
+    }
+    
+    .protocol-actions {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 20px;
+    }
+    
+    .back-btn {
+        padding: 8px 16px;
+        background-color: #6c757d;
+        color: white;
+        text-decoration: none;
+        border-radius: 4px;
+    }
+    
+    .print-btn {
+        padding: 8px 16px;
+        background-color: #28a745;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    
+    .protocol-document {
+        background: white;
+        padding: 30px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    
+    .protocol-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+    }
+    
+    .protocol-table th, .protocol-table td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+    }
+    
+    .protocol-table th {
+        background-color: #f2f2f2;
+    }
+    
+    .signatures {
+        margin-top: 40px;
+    }
+    
+    .signature-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 20px;
+    }
+    
+    .signature-left, .signature-right {
+        width: 45%;
+    }
+    
+    @media print {
+        .protocol-actions {
+            display: none;
+        }
+        .protocol-page {
+            padding: 0;
+        }
+    }
+</style>
+{% endblock %}

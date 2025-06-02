@@ -1,0 +1,182 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-container">
+    <!-- Сайдбар с голосованиями -->
+    <div class="sidebar">
+        <h2>История голосований</h2>
+        <ul class="voting-list">
+            {% for voting in votings %}
+            <li class="voting-item {% if voting.active %}active{% endif %}">
+                <a href="{{ url_for('votes', voting_id=voting.id) }}">
+                    {{ voting.year }}-{{ voting.period }}
+                </a>
+                {% if voting.active %}<span class="active-badge">Текущее</span>{% endif %}
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <!-- Основное содержимое -->
+    <div class="main-content">
+        <h1>Голосование за студента</h1>
+        <form method="POST" action="{{ url_for('votes') }}">
+            {{ form.hidden_tag() }}
+
+            <div class="form-group">
+                <label for="student">Выберите студента:</label>
+                <select id="student" name="student" class="form-control" required>
+                    <option value="">-- Выберите из списка --</option>
+                    {% for student in students %}
+                    <option value="{{ student.id }}">{{ student.full_name }} (Группа: {{ student.group }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <button type="submit" class="submit-btn">Проголосовать</button>
+
+            <div class="protocol-section">
+                <a href="{{ url_for('protocol') }}" class="protocol-btn">Сформировать протокол</a>
+            </div>
+        </form>
+        <div>
+            {% if vote_success %}<p class="text-sm text-gray-500">{{ vote_success }}</p> {% endif%}
+        </div>
+    </div>
+</div>
+
+<style>
+    .protocol-section {
+        margin-top: 30px;
+        text-align: center;
+    }
+
+    .protocol-btn {
+        display: inline-block;
+        padding: 12px 24px;
+        background-color: #2c7be5;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        font-size: 16px;
+        cursor: pointer;
+        text-decoration: none;
+        transition: background-color 0.3s;
+    }
+
+    .protocol-btn:hover {
+        background-color: #1a68d1;
+    }
+
+    .page-container {
+        display: flex;
+        min-height: 100vh;
+    }
+
+    .sidebar {
+        width: 250px;
+        background: #2c3e50;
+        color: white;
+        padding: 20px;
+        box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    }
+
+    .sidebar h2 {
+        color: #ecf0f1;
+        font-size: 1.2em;
+        border-bottom: 1px solid #34495e;
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+    }
+
+    .voting-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .voting-item {
+        padding: 10px 15px;
+        margin-bottom: 5px;
+        border-radius: 4px;
+        transition: background 0.3s;
+    }
+
+    .voting-item:hover {
+        background: #34495e;
+    }
+
+    .voting-item a {
+        color: #ecf0f1;
+        text-decoration: none;
+        display: block;
+    }
+
+    .voting-item.active {
+        background: #3498db;
+    }
+
+    .active-badge {
+        background: #e74c3c;
+        color: white;
+        font-size: 0.7em;
+        padding: 2px 5px;
+        border-radius: 3px;
+        margin-left: 10px;
+    }
+
+    .main-content {
+        flex: 1;
+        padding: 30px;
+        background: #f9f9f9;
+    }
+
+    /* Остальные стили формы остаются без изменений */
+    .voting-form {
+        max-width: 600px;
+        margin: 0 auto;
+    }
+    
+    h1 {
+        text-align: center;
+        color: #333;
+        margin-bottom: 30px;
+    }
+    
+    .form-group {
+        margin-bottom: 25px;
+    }
+    
+    label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: bold;
+        color: #555;
+    }
+    
+    .form-control {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 16px;
+    }
+    
+    .submit-btn {
+        display: block;
+        width: 100%;
+        padding: 12px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+    
+    .submit-btn:hover {
+        background-color: #45a049;
+    }
+</style>
+{% endblock %}
