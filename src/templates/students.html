@@ -2,15 +2,15 @@
 
 {% block content %}
 <div class="flex h-screen w-full">
-    <!-- Сайдбар -->
+    <!-- Sidebar -->
     <div class="w-1/4 bg-white shadow-md">
         <div class="p-4 border-b">
             <h2 class="text-xl font-semibold">Студенты</h2>
             <div class="mt-2">
-                <form method="GET" action="#">
+                <form method="GET" action="{{ url_for('students') }}">
                     {{ search_form.name(
                         class_="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 mb-5",
-                        placeholder_="Введите имя"
+                        placeholder_="Введите имя",
                         )
                     }}
                     {{ search_form.submit(class_="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition duration-200") }}
@@ -24,9 +24,6 @@
                     <a href="{{ url_for('students', selected_id=student.id) }}">
                         <div class="font-medium">{{ student.name }}</div>
                         <div class="text-sm text-gray-500">{{ student.group_code }}</div>
-                        <div class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition duration-200 mt-2">
-                            {{ student.submit }}
-                        </div>
                     </a>
                 </li>
                 {% endfor %}
@@ -34,48 +31,86 @@
         </div>
     </div>
 
+    <!-- Main Content -->
     <div class="flex-1 p-6 overflow-y-auto">
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="mb-4 p-4 rounded-md
+                        {% if category == 'error' %}bg-red-100 text-red-700
+                        {% elif category == 'success' %}bg-green-100 text-green-700
+                        {% elif category == 'info' %}bg-blue-100 text-blue-700
+                        {% else %}bg-gray-100 text-gray-700{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Add Student Form -->
         <div class="bg-white rounded-lg shadow-md p-6 mb-6">
             <h2 class="text-xl font-semibold mb-4">Добавить студента</h2>
-            <form id="add-student-form" class="space-y-4" method="POST" action="#">
+            <form id="add-student-form" class="space-y-4" method="POST" action="{{ url_for('students') }}">
+                {{ add_student_form.hidden_tag() }}
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
                         {{ add_student_form.name.label(class_="block text-sm font-medium text-gray-700") }}
-                        {{ add_student_form.name(class_="mt-1 block w-full border border-gray-300 rounded-md shadow-sm
-                        py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500") }}
+                        {{ add_student_form.name(class_="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500") }}
+                        {% if add_student_form.name.errors %}
+                            {% for error in add_student_form.name.errors %}
+                                <p class="text-red-500 text-xs mt-1">{{ error }}</p>
+                            {% endfor %}
+                        {% endif %}
                     </div>
                     <div>
                         {{ add_student_form.group_code.label(class_="block text-sm font-medium text-gray-700") }}
-                        {{ add_student_form.group_code(class_="mt-1 block w-full border border-gray-300 rounded-md
-                        shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500") }}
+                        {{ add_student_form.group_code(class_="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500") }}
+                        {% if add_student_form.group_code.errors %}
+                            {% for error in add_student_form.group_code.errors %}
+                                <p class="text-red-500 text-xs mt-1">{{ error }}</p>
+                            {% endfor %}
+                        {% endif %}
                     </div>
                     <div>
                         {{ add_student_form.inn.label(class_="block text-sm font-medium text-gray-700") }}
-                        {{ add_student_form.inn(class_="mt-1 block w-full border border-gray-300 rounded-md shadow-sm
-                        py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500") }}
+                        {{ add_student_form.inn(class_="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500") }}
+                        {% if add_student_form.inn.errors %}
+                            {% for error in add_student_form.inn.errors %}
+                                <p class="text-red-500 text-xs mt-1">{{ error }}</p>
+                            {% endfor %}
+                        {% endif %}
                     </div>
                     <div>
                         {{ add_student_form.serial_number.label(class_="block text-sm font-medium text-gray-700") }}
-                        {{ add_student_form.serial_number(class_="mt-1 block w-full border border-gray-300 rounded-md
-                        shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500") }}
+                        {{ add_student_form.serial_number(class_="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500") }}
+                        {% if add_student_form.serial_number.errors %}
+                            {% for error in add_student_form.serial_number.errors %}
+                                <p class="text-red-500 text-xs mt-1">{{ error }}</p>
+                            {% endfor %}
+                        {% endif %}
                     </div>
                     <div>
                         {{ add_student_form.birthdate.label(class_="block text-sm font-medium text-gray-700") }}
-                        {{ add_student_form.birthdate(class_="mt-1 block w-full border border-gray-300 rounded-md
-                        shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500") }}
+                        {{ add_student_form.birthdate(class_="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500") }}
+                        {% if add_student_form.birthdate.errors %}
+                            {% for error in add_student_form.birthdate.errors %}
+                                <p class="text-red-500 text-xs mt-1">{{ error }}</p>
+                            {% endfor %}
+                        {% endif %}
                     </div>
                     <div class="flex items-center">
-                        {{ add_student_form.is_resident.label(class_="mr-2 block text-sm text-gray-700") }}
                         {{ add_student_form.is_resident(class_="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded") }}
+                        {{ add_student_form.is_resident.label(class_="ml-2 block text-sm text-gray-700") }}
                     </div>
                 </div>
                 <div>
-                    {{ add_student_form.submit(class_="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700
-                    focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500") }}
+                    {{ add_student_form.submit(class_="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500") }}
                 </div>
             </form>
         </div>
 
+        <!-- Student Details -->
         <div id="student-details" class="bg-white rounded-lg shadow-md p-6">
             {% if selected_student %}
             <h2 class="text-xl font-semibold mb-4">Информация о студенте</h2>
@@ -94,13 +129,21 @@
                         <p>{{ selected_student.passport_data }}</p>
                     </div>
                     <div>
+                        <p class="text-sm text-gray-500">Дата рождения</p>
+                        <p>{{ selected_student.birthdate.strftime('%d.%m.%Y') if selected_student.birthdate else 'N/A' }}</p>
+                    </div>
+                    <div>
                         <p class="text-sm text-gray-500">Резидент РФ</p>
-                        <p>{{ 'Да' if selected_student.is_resident else 'Нет' }}</p>
+                        <p>{{ 'Yes' if selected_student.is_resident else 'No' }}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500">Добавлен</p>
+                        <p>{{ selected_student.created_at.strftime('%d.%m.%Y %H:%M') if selected_student.created_at else 'N/A' }}</p>
                     </div>
                 </div>
             </div>
             {% else %}
-            <p class="text-gray-500">Выберите студента из списка</p>
+            <p class="text-gray-500"></p>
             {% endif %}
         </div>
     </div>
