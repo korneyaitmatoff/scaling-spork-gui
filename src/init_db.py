@@ -1,5 +1,7 @@
+from random import randint
+
 from sqlalchemy import create_engine
-from models import Base, User, Student, IncomingRequest, SessionLocal
+from models import Base, User, Student, IncomingRequest, SessionLocal, Vote, Protocol
 from werkzeug.security import generate_password_hash
 from datetime import date, datetime
 import os
@@ -211,6 +213,46 @@ def add_test_data():
                 db.add(incoming_request)
 
             print("Test incoming requests added successfully!")
+
+        db.commit()
+        # add votes
+
+        votes = [
+            {
+                "maintainer_id": db.query(User).first().id,
+                "is_active": True,
+            },
+            {
+                "maintainer_id": db.query(User).first().id,
+                "is_active": False,
+            },
+            {
+                "maintainer_id": db.query(User).first().id,
+                "is_active": False,
+            },
+            {
+                "maintainer_id": db.query(User).first().id,
+                "is_active": False,
+            },
+        ]
+
+        for vote in votes:
+            vote_instance = Vote(**vote)
+            db.add(vote_instance)
+
+        db.commit()
+
+        protocols = [
+            {
+                "maintainer_id": db.query(User).first().id,
+                "vote_id": vote.id,
+                "budget_amount": randint(1000, 10000)
+            } for vote in db.query(Vote).all()
+        ]
+
+        for protocol in protocols:
+            protocol_instance = Protocol(**protocol)
+            db.add(protocol_instance)
 
         db.commit()
         print("\nTest login credentials:")

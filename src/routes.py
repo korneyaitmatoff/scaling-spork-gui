@@ -1,28 +1,35 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 from werkzeug.security import check_password_hash
-from models import User, Student, IncomingRequest, get_db
+from models import User, Student, IncomingRequest, get_db, Vote
 from forms import SearchStudentForm, AddStudentForm, IncomingRequestForm
 from functools import wraps
 from sqlalchemy import or_
 
+from src.models import VoteEmployee, Protocol, VoteStudent
+
 app = Flask(__name__)
 app.secret_key = 'your-secret-key-change-this-in-production'
 
+
 def login_required(f):
     """Decorator to require login for protected routes"""
+
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if 'user_id' not in session:
             return redirect(url_for('login'))
         return f(*args, **kwargs)
+
     return decorated_function
+
 
 @app.route('/')
 def index():
-    """Home page - redirect to dashboard if logged in, otherwise to login"""
+    """Home page - redirect to students if logged in, otherwise to login"""
     if 'user_id' in session:
-        return redirect(url_for('dashboard'))
+        return redirect(url_for('students'))
     return redirect(url_for('login'))
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -50,9 +57,9 @@ def login():
                 session['username'] = user.username
                 flash(f'Welcome back, {user.username}!', 'success')
 
-                # Redirect to next page if specified, otherwise dashboard
+                # Redirect to next page if specified, otherwise students
                 next_page = request.args.get('next')
-                return redirect(next_page) if next_page else redirect(url_for('dashboard'))
+                return redirect(next_page) if next_page else redirect(url_for('students'))
             else:
                 flash('Invalid username or password', 'error')
 
@@ -64,6 +71,7 @@ def login():
 
     return render_template('login.html')
 
+
 @app.route('/logout')
 def logout():
     """Logout handler"""
@@ -72,12 +80,6 @@ def logout():
     flash(f'Goodbye, {username}!', 'info')
     return redirect(url_for('login'))
 
-@app.route('/dashboard')
-@login_required
-def dashboard():
-    """Protected dashboard page"""
-    username = session.get('username', 'User')
-    return render_template('dashboard.html', username=username)
 
 @app.route('/profile')
 @login_required
@@ -89,6 +91,7 @@ def profile():
         return render_template('profile.html', user=user)
     finally:
         db.close()
+
 
 @app.route('/students', methods=['GET', 'POST'])
 @login_required
@@ -148,13 +151,14 @@ def students():
                 pass
 
         return render_template('students.html',
-                             students=students,
-                             selected_student=selected_student,
-                             search_form=search_form,
-                             add_student_form=add_student_form)
+                               students=students,
+                               selected_student=selected_student,
+                               search_form=search_form,
+                               add_student_form=add_student_form)
 
     finally:
         db.close()
+
 
 @app.route('/incoming_request', methods=['GET', 'POST'])
 @login_required
@@ -191,6 +195,7 @@ def incoming_request():
 
     return render_template('incoming_request.html', form=form)
 
+
 @app.route('/incoming_request_result/<int:request_id>')
 @login_required
 def incoming_request_result(request_id):
@@ -200,15 +205,57 @@ def incoming_request_result(request_id):
         request_data = db.query(IncomingRequest).filter(IncomingRequest.id == request_id).first()
         if not request_data:
             flash('Request not found', 'error')
-            return redirect(url_for('dashboard'))
+            return redirect(url_for('students'))
 
         return render_template('incoming_request_result.html', request=request_data)
     finally:
         db.close()
 
-@app.route("/votes")
-def votes():
-    pass
+
+@app.route('/votes', methods=['GET', 'POST'])
+def votes(voting_id=None):
+    from src.forms import VoteForm
+
+    form = VoteForm()
+    db = next(get_db())
+
+    if form.is_submitted():
+        # add user to VoteEmployee
+        db.add(VoteEmployee(
+            employee_id=session["user_id"],
+            vote_id=request.args.get('voting_id'),
+            protocol_id=db.query(Protocol).first().id
+        ))
+        # add student to VoteStudent
+        db.add(VoteStudent(
+            vote_id=request.args.get('voting_id'),
+            student_id=form.students.data,
+            protocol_id=db.query(Protocol).first().id
+        ))
+        db.commit()
+
+        flash('Vote submitted successfully!', 'success')
+
+    return render_template(
+        'votes.html',
+        form=form,
+        students=[item for item in db.query(IncomingRequest).all()],
+        votes=[item for item in db.query(Vote).all()]
+    )
+
+
+@app.route('/protocol', methods=['GET'])
+def protocol():
+    db = next(get_db())
+
+    students = db.query(IncomingRequest).all()
+    print([item for item in students])
+
+    return render_template(
+        "protocol.html",
+        students=[item for item in students]
+    )
+
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5004)
+    app.run(debug=True, port=5005)

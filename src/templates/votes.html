@@ -6,12 +6,12 @@
     <div class="sidebar">
         <h2>История голосований</h2>
         <ul class="voting-list">
-            {% for voting in votings %}
+            {% for voting in votes %}
             <li class="voting-item {% if voting.active %}active{% endif %}">
                 <a href="{{ url_for('votes', voting_id=voting.id) }}">
-                    {{ voting.year }}-{{ voting.period }}
+                    {{ voting.created_at.year }} -- {{ '1' if voting.created_at.month < 6 else '2' }}
                 </a>
-                {% if voting.active %}<span class="active-badge">Текущее</span>{% endif %}
+                {% if voting.is_active %}<span class="active-badge">Текущее</span>{% endif %}
             </li>
             {% endfor %}
         </ul>
@@ -20,15 +20,14 @@
     <!-- Основное содержимое -->
     <div class="main-content">
         <h1>Голосование за студента</h1>
-        <form method="POST" action="{{ url_for('votes') }}">
-            {{ form.hidden_tag() }}
+        <form method="POST" action="{{ url_for('votes', voting_id=request.args.get('voting_id')) }}">
 
             <div class="form-group">
                 <label for="student">Выберите студента:</label>
-                <select id="student" name="student" class="form-control" required>
+                <select id="student" name="students" class="form-control" required>
                     <option value="">-- Выберите из списка --</option>
                     {% for student in students %}
-                    <option value="{{ student.id }}">{{ student.full_name }} (Группа: {{ student.group }})</option>
+                    <option value="{{ student.id }}">{{ student.student_name }} (Группа: {{ student.group }})</option>
                     {% endfor %}
                 </select>
             </div>
@@ -36,7 +35,7 @@
             <button type="submit" class="submit-btn">Проголосовать</button>
 
             <div class="protocol-section">
-                <a href="{{ url_for('protocol') }}" class="protocol-btn">Сформировать протокол</a>
+                <a href="{{ url_for('protocol', voting_id=request.args.get('voting_id')) }}" class="protocol-btn">Сформировать протокол</a>
             </div>
         </form>
         <div>
